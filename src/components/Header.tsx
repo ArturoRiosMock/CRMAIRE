@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Plus, Download, Upload, Settings, Instagram } from "lucide-react";
+import { Plus, Upload, Settings, Instagram, Save } from "lucide-react";
 import type { BoardState } from "@/types";
 import { SearchBar } from "./SearchBar";
 import {
@@ -44,13 +44,26 @@ export function Header({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const igFileInputRef = useRef<HTMLInputElement>(null);
 
-  function handleExport() {
-    const data = onExport();
-    const blob = new Blob([data], { type: "application/json" });
+  function handleSaveState() {
+    const stateStr = onExport();
+    const state = JSON.parse(stateStr) as BoardState;
+    const leadsCount = Object.keys(state.followers).length;
+    const payload = {
+      _backup: true,
+      _exportedAt: new Date().toISOString(),
+      _leadsCount: leadsCount,
+      ...state,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `crm-seguidores-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+    const timeStr = now.toTimeString().slice(0, 5).replace(":", "-");
+    a.download = `crm-seguidores-estado-${dateStr}-${timeStr}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -188,12 +201,27 @@ export function Header({
           />
           <button
             type="button"
-            onClick={handleExport}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-600 px-3 py-1.5 text-sm text-gray-300 transition hover:bg-gray-800"
-            title="Exportar datos"
+            onClick={handleSaveState}
+            className="inline-flex items-center gap-2 rounded-lg border border-emerald-600/60 bg-emerald-600/20 px-3 py-1.5 text-sm font-medium text-emerald-400 transition hover:bg-emerald-600/30"
+            title="Descargar copia de seguridad del CRM (columnas, leads, etiquetas, montos). Guarda este archivo en tu PC para poder restaurar después."
           >
-            <Download className="h-4 w-4" />
-            Exportar
+            <Save className="h-4 w-4" />
+            Guardar estado
+          </button>
+          <button
+            type="button"
+            onClick={handleImportClick}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition ${
+              importSuccess
+                ? "border-green-500 bg-green-500/20 text-green-400"
+                : importError
+                  ? "border-red-500 bg-red-500/20 text-red-400"
+                  : "border-gray-600 text-gray-300 hover:bg-gray-800"
+            }`}
+            title="Subir un archivo .json de backup para restaurar el CRM al estado guardado (reemplaza todo el estado actual)."
+          >
+            <Upload className="h-4 w-4" />
+            Restaurar backup
           </button>
           {onImportInstagram && (
             <>
@@ -225,21 +253,6 @@ export function Header({
               </button>
             </>
           )}
-          <button
-            type="button"
-            onClick={handleImportClick}
-            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition ${
-              importSuccess
-                ? "border-green-500 bg-green-500/20 text-green-400"
-                : importError
-                  ? "border-red-500 bg-red-500/20 text-red-400"
-                  : "border-gray-600 text-gray-300 hover:bg-gray-800"
-            }`}
-            title="Importar datos"
-          >
-            <Upload className="h-4 w-4" />
-            Importar
-          </button>
         </div>
       </div>
     </header>

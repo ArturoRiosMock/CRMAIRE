@@ -101,9 +101,12 @@ export function useBoardState() {
 
   const importData = useCallback((json: string): boolean => {
     try {
-      const parsed = JSON.parse(json) as BoardState;
-      if (parsed.columns && parsed.followers && parsed.tags) {
-        setState(parsed);
+      const parsed = JSON.parse(json) as BoardState & { _backup?: boolean };
+      const stateToRestore = parsed._backup
+        ? { columns: parsed.columns, followers: parsed.followers, tags: parsed.tags }
+        : parsed;
+      if (stateToRestore.columns && stateToRestore.followers && stateToRestore.tags) {
+        setState(stateToRestore);
         return true;
       }
     } catch {
