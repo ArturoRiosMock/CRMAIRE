@@ -45,6 +45,7 @@ export function AddFollowerForm({
       tags: selectedTags,
       notes: [],
       columnId,
+      proposalAmountUsd: null,
       contactDate: now,
       createdAt: now,
       updatedAt: now,

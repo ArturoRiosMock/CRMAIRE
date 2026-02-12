@@ -110,6 +110,24 @@ export function Board({
     searchQuery.trim().length > 0 || tagFilter.length > 0;
   const columnsToShow = showAllWhenFiltered ? filteredColumns : sortedColumns;
 
+  function handleProposalAmountChange(followerId: string, amount: number | null) {
+    onStateChange((prev) => {
+      const f = prev.followers[followerId];
+      if (!f) return prev;
+      return {
+        ...prev,
+        followers: {
+          ...prev.followers,
+          [followerId]: {
+            ...f,
+            proposalAmountUsd: amount,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      };
+    });
+  }
+
   function handleDragEnd(result: DropResult) {
     const { source, destination, draggableId } = result;
     if (!destination) return;
@@ -168,6 +186,7 @@ export function Board({
               highlightedIds={highlightedIds}
               onCardClick={onCardClick}
               onAddClick={() => onAddToColumn(column.id)}
+              onProposalAmountChange={handleProposalAmountChange}
               showAll={showAllWhenFiltered}
             />
           );

@@ -36,6 +36,10 @@ export function FollowerModal({
   }, [follower]);
 
   const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+  const currentColumn = columns.find((c) => c.id === form.columnId);
+  const showProposalAmount =
+    currentColumn &&
+    (currentColumn.title === "Negociación" || currentColumn.title === "Cliente");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -165,6 +169,36 @@ export function FollowerModal({
               onCreateTag={onCreateTag}
             />
           </div>
+
+          {showProposalAmount && (
+            <div>
+              <label className="mb-1 block text-sm text-gray-400">
+                Monto propuesta (USD)
+              </label>
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={form.proposalAmountUsd ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const val =
+                    raw === ""
+                      ? null
+                      : Number.parseFloat(raw);
+                  setForm((f) => ({
+                    ...f,
+                    proposalAmountUsd:
+                      val !== null && !Number.isNaN(val) && val >= 0
+                        ? val
+                        : null,
+                  }));
+                }}
+                className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-gray-500 focus:outline-none"
+                placeholder="0"
+              />
+            </div>
+          )}
 
           <div>
             <label className="mb-1 block text-sm text-gray-400">

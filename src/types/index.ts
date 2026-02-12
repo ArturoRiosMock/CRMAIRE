@@ -20,6 +20,8 @@ export interface Follower {
   tags: string[];
   notes: Note[];
   columnId: string;
+  /** Monto en USD de la propuesta (visible en Negociación/Cliente) */
+  proposalAmountUsd?: number | null;
   contactDate?: string;
   createdAt: string;
   updatedAt: string;

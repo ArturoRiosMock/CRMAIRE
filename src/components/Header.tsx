@@ -20,6 +20,8 @@ interface HeaderProps {
   tagFilter: string[];
   onTagFilterChange: (tags: string[]) => void;
   tags: BoardState["tags"];
+  /** Suma de proposalAmountUsd de leads en columna Cliente (USD) */
+  totalClosedUsd?: number;
 }
 
 export function Header({
@@ -33,6 +35,7 @@ export function Header({
   tagFilter,
   onTagFilterChange,
   tags,
+  totalClosedUsd = 0,
 }: HeaderProps) {
   const [importError, setImportError] = useState(false);
   const [importSuccess, setImportSuccess] = useState(false);
@@ -136,10 +139,15 @@ export function Header({
   return (
     <header className="sticky top-0 z-40 border-b border-gray-800 bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-gray-950/80">
       <div className="mx-auto flex max-w-[1920px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-lg font-semibold text-white sm:text-xl">
             CRM Seguidores
           </h1>
+          {totalClosedUsd > 0 && (
+            <span className="rounded-lg bg-emerald-600/20 px-3 py-1.5 text-sm font-medium text-emerald-400 ring-1 ring-emerald-500/30">
+              Total cerrado: ${totalClosedUsd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
+            </span>
+          )}
           <div className="flex items-center gap-1">
             <button
               type="button"

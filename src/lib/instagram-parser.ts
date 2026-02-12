@@ -103,6 +103,7 @@ export function usernamesToBoardState(
       tags: [],
       notes: [],
       columnId: firstColumn.id,
+      proposalAmountUsd: null,
       contactDate: now,
       createdAt: now,
       updatedAt: now,

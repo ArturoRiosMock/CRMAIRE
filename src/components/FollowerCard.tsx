@@ -6,21 +6,42 @@ import type { Follower, Tag } from "@/types";
 import { formatDateShort } from "@/lib/utils";
 import { TagBadge } from "./TagBadge";
 
+const SHOW_PROPOSAL_AMOUNT_COLUMNS = ["Negociación", "Cliente"];
+
 interface FollowerCardProps {
   follower: Follower;
+  columnTitle: string;
   tagsMap: Record<string, Tag>;
   provided: DraggableProvided;
   isHighlighted?: boolean;
+  onProposalAmountChange?: (followerId: string, amount: number | null) => void;
 }
 
 function FollowerCardInner({
   follower,
+  columnTitle,
   tagsMap,
   provided,
   isHighlighted,
+  onProposalAmountChange,
 }: FollowerCardProps) {
   const lastNote = follower.notes[follower.notes.length - 1];
   const hasRecentNotes = follower.notes.length > 0;
+  const showProposalAmount = SHOW_PROPOSAL_AMOUNT_COLUMNS.includes(columnTitle);
+  const amount = follower.proposalAmountUsd ?? "";
+
+  function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!onProposalAmountChange) return;
+    const raw = e.target.value.trim().replace(/,/, ".");
+    if (raw === "") {
+      onProposalAmountChange(follower.id, null);
+      return;
+    }
+    const num = Number.parseFloat(raw);
+    if (!Number.isNaN(num) && num >= 0) {
+      onProposalAmountChange(follower.id, num);
+    }
+  }
 
   return (
     <div
@@ -58,6 +79,21 @@ function FollowerCardInner({
             if (!tag) return null;
             return <TagBadge key={tagId} tag={tag} />;
           })}
+        </div>
+      )}
+      {showProposalAmount && (
+        <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+          <label className="mb-0.5 block text-xs text-gray-400">
+            Monto propuesta (USD)
+          </label>
+          <input
+            type="text"
+            inputMode="decimal"
+            placeholder="0"
+            value={amount === "" ? "" : amount}
+            onChange={handleAmountChange}
+            className="w-full rounded border border-gray-600 bg-gray-700/80 px-2 py-1 text-sm text-white placeholder:text-gray-500 focus:border-gray-500 focus:outline-none"
+          />
         </div>
       )}
       {(follower.contactDate || lastNote) && (

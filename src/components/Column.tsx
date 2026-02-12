@@ -19,6 +19,7 @@ interface ColumnProps {
   highlightedIds: Set<string>;
   onCardClick: (follower: Follower) => void;
   onAddClick: () => void;
+  onProposalAmountChange?: (followerId: string, amount: number | null) => void;
   /** Cuando hay filtro activo, mostrar todos los resultados (sin paginar) */
   showAll?: boolean;
 }
@@ -30,6 +31,7 @@ function ColumnInner({
   highlightedIds,
   onCardClick,
   onAddClick,
+  onProposalAmountChange,
   showAll = false,
 }: ColumnProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_PER_COLUMN);
@@ -84,9 +86,11 @@ function ColumnInner({
                   >
                     <FollowerCard
                       follower={follower}
+                      columnTitle={column.title}
                       tagsMap={tagsMap}
                       provided={dragProvided}
                       isHighlighted={highlightedIds.has(follower.id)}
+                      onProposalAmountChange={onProposalAmountChange}
                     />
                   </div>
                 )}

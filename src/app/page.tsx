@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useBoardState } from "@/hooks/useBoardState";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Header } from "@/components/Header";
@@ -22,6 +22,18 @@ export default function Home() {
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [, startTransition] = useTransition();
+
+  const totalClosedUsd = useMemo(() => {
+    const clienteCol = state.columns.find((c) => c.title === "Cliente");
+    if (!clienteCol) return 0;
+    let sum = 0;
+    for (const id of clienteCol.followerIds) {
+      const f = state.followers[id];
+      const amount = f?.proposalAmountUsd;
+      if (typeof amount === "number" && amount > 0) sum += amount;
+    }
+    return sum;
+  }, [state.columns, state.followers]);
 
   if (!isHydrated) {
     return (
@@ -51,6 +63,7 @@ export default function Home() {
         tagFilter={tagFilter}
         onTagFilterChange={setTagFilter}
         tags={state.tags}
+        totalClosedUsd={totalClosedUsd}
       />
       <Board
         state={state}
