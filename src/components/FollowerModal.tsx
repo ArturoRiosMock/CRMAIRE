@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, ExternalLink, Trash2 } from "lucide-react";
+import { X, ExternalLink, Trash2, Bell } from "lucide-react";
 import type { Follower, Column, Tag, Note } from "@/types";
 import { generateId } from "@/lib/utils";
 import { NoteTimeline } from "./NoteTimeline";
@@ -40,6 +40,17 @@ export function FollowerModal({
   const showProposalAmount =
     currentColumn &&
     (currentColumn.title === "Negociación" || currentColumn.title === "Cliente");
+
+  function toDatetimeLocal(iso: string | null | undefined): string {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const h = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${y}-${m}-${day}T${h}:${min}`;
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -158,6 +169,39 @@ export function FollowerModal({
               }
               className="w-full rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-gray-500 focus:outline-none"
             />
+          </div>
+
+          <div>
+            <label className="mb-1 flex items-center gap-1.5 text-sm text-gray-400">
+              <Bell className="h-4 w-4" />
+              Recordatorio / Seguimiento
+            </label>
+            <p className="mb-1.5 text-xs text-gray-500">
+              Fecha y hora en que debes escribirle (ej. &quot;escríbeme el viernes&quot;). En la card aparecerá un icono cuando llegue el momento.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="datetime-local"
+                value={toDatetimeLocal(form.followUpAt)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setForm((f) => ({
+                    ...f,
+                    followUpAt: v ? new Date(v).toISOString() : null,
+                  }));
+                }}
+                className="flex-1 rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-white focus:border-gray-500 focus:outline-none"
+              />
+              {form.followUpAt && (
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, followUpAt: null }))}
+                  className="shrink-0 rounded-lg border border-gray-600 px-3 py-2 text-sm text-gray-400 hover:bg-gray-800 hover:text-white"
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
           </div>
 
           <div>

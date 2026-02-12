@@ -104,6 +104,7 @@ export function usernamesToBoardState(
       notes: [],
       columnId: firstColumn.id,
       proposalAmountUsd: null,
+      followUpAt: null,
       contactDate: now,
       createdAt: now,
       updatedAt: now,

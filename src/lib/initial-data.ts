@@ -44,6 +44,7 @@ export function getInitialBoardState(): BoardState {
       ],
       columnId: columns[0].id,
       proposalAmountUsd: null as number | null,
+      followUpAt: null,
       contactDate: now,
       createdAt: now,
       updatedAt: now,

@@ -22,6 +22,8 @@ export interface Follower {
   columnId: string;
   /** Monto en USD de la propuesta (visible en Negociación/Cliente) */
   proposalAmountUsd?: number | null;
+  /** Fecha y hora (ISO) para recordatorio: "escríbeme este día" — en la card se muestra icono cuando llega el momento */
+  followUpAt?: string | null;
   contactDate?: string;
   createdAt: string;
   updatedAt: string;

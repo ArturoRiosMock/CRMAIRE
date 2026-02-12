@@ -2,9 +2,16 @@
 
 import { memo } from "react";
 import type { DraggableProvided } from "@hello-pangea/dnd";
+import { Bell } from "lucide-react";
 import type { Follower, Tag } from "@/types";
 import { formatDateShort } from "@/lib/utils";
 import { TagBadge } from "./TagBadge";
+
+function isFollowUpDue(followUpAt: string | null | undefined): boolean {
+  if (!followUpAt) return false;
+  const due = new Date(followUpAt).getTime();
+  return Date.now() >= due;
+}
 
 const SHOW_PROPOSAL_AMOUNT_COLUMNS = ["Negociación", "Cliente"];
 
@@ -29,6 +36,7 @@ function FollowerCardInner({
   const hasRecentNotes = follower.notes.length > 0;
   const showProposalAmount = SHOW_PROPOSAL_AMOUNT_COLUMNS.includes(columnTitle);
   const amount = follower.proposalAmountUsd ?? "";
+  const followUpDue = isFollowUpDue(follower.followUpAt);
 
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!onProposalAmountChange) return;
@@ -52,7 +60,7 @@ function FollowerCardInner({
         isHighlighted ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-950" : "border-gray-700"
       }`}
     >
-      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-white">{follower.name}</p>
           <a
@@ -65,12 +73,22 @@ function FollowerCardInner({
             @{follower.username}
           </a>
         </div>
-        {hasRecentNotes && (
-          <span
-            className="h-2 w-2 shrink-0 rounded-full bg-blue-500"
-            title="Tiene notas"
-          />
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {followUpDue && (
+            <span
+              className="rounded-full bg-amber-500/20 p-1 text-amber-400 ring-1 ring-amber-500/40"
+              title="Recordatorio: debes escribirle"
+            >
+              <Bell className="h-4 w-4" />
+            </span>
+          )}
+          {hasRecentNotes && (
+            <span
+              className="h-2 w-2 rounded-full bg-blue-500"
+              title="Tiene notas"
+            />
+          )}
+        </div>
       </div>
       {follower.tags.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
