@@ -119,7 +119,7 @@ export function Header({
       );
     }
     Promise.all(readers).then(() => {
-      const unique = [...new Set(allUsernames)];
+      const unique = Array.from(new Set(allUsernames));
       if (unique.length > 0) {
         const boardState = usernamesToBoardState(unique, null);
         onImportInstagram(boardState);
